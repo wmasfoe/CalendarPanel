@@ -1,0 +1,64 @@
+.panel {
+  margin: 20px auto;
+  padding: 16px 26px;
+  border-radius: 16px;
+  overflow: hidden;
+  min-width: 300px;
+  width: 500px;
+  min-height: 400px;
+  box-shadow: 0px 10px 15px -3px rgba(0,0,0,0.1);
+  background: var(--bg-color);
+
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100px;
+    margin-block: 10px 30px;
+
+    .month {
+      font-weight: 500;
+      font-size: 20px;
+      color: var(--text-color)
+    }
+  
+    .year {
+      font-weight: 600;
+      font-size: 20px;
+      color: var(--text-color)
+    }
+  }
+  .main {
+    margin-top: 16px;
+
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(6, fill);
+    & .no-select {
+      text-align: center;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    & .week {
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    & .day-block {
+      padding-block: 16px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+      cursor: pointer;
+
+      &.disable {
+        color: var(--disabled-color);
+        cursor: not-allowed;
+        pointer-events: painted;
+      }
+    }
+  }
+}
