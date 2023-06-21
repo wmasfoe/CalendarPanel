@@ -52,12 +52,17 @@
       height: 30px;
       text-align: center;
       line-height: 30px;
+      border-radius: 16px;
       cursor: pointer;
 
       &.disable {
         color: var(--disabled-color);
         cursor: not-allowed;
         pointer-events: painted;
+      }
+      &.active {
+        color: var(--active-text-color);
+        background-color: var(--active-bg-color);
       }
     }
   }

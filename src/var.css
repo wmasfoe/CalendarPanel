@@ -2,4 +2,7 @@
   --bg-color: #fff;
   --text-color: #333;
   --disabled-color: #ccc;
+
+  --active-bg-color: #4670cb;
+  --active-text-color: #fff;
 }
