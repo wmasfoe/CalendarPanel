@@ -10,11 +10,10 @@ export type ParserDateReturnValue = {
 
 export type PanelDayBlockPropsType = {
   value: Date;
-  currentYear: string | number;
-  currentMonth: string | number;
-  date?: {
+  date: {
     currentYear: string | number;
     currentMonth: string | number;
     currentDay: string | number;
-  }
+  };
+  index?: number;
 }

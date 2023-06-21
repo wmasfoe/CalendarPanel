@@ -1,4 +1,4 @@
-import { CalendarPanel } from './Calendar'
+import { CalendarPanel } from './components/Calendar/Calendar'
 function App() {
   return <CalendarPanel />
 }
