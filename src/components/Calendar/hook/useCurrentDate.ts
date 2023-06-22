@@ -1,9 +1,23 @@
 import { useState } from 'react'
 import { parserDate } from '../core'
 
-export function useCurrentDate(initDate: Date) {
+type useCurrentDateParams = {
+  initDate?: Date
+  year?: string|number;
+  month?: string|number;
+  day?: string|number;
+  initValue?: boolean;
+}
 
-  const { year: parseYear, month: parseMonth, day } = parserDate(initDate)
+export function useCurrentDate(params: useCurrentDateParams) {
+  const { initDate, initValue = false, year, month } = params || {}
+  const defaultDate = initDate ?
+                      initDate :
+                      year && month ?
+                      new Date(Number(year), Number(month) -1) :
+                      new Date()
+
+  const { year: parseYear, month: parseMonth, day } = parserDate(defaultDate)
 
   const [dateState, setDateState] = useState({
     year: parseYear,
@@ -22,6 +36,8 @@ export function useCurrentDate(initDate: Date) {
   }
 
   return {
+    dateState,
+    ...dateState,
     handleChangeDate,
     dayBlockDateProps
   }

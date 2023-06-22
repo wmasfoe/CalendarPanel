@@ -1,34 +1,26 @@
-import { FC, memo } from 'react'
-import type { PanelPropsType, PanelDayBlockPropsType } from './types'
-import { getMonthDay, parserDate } from './core'
+import { FC, useCallback, useState } from 'react'
+import type { PanelPropsType } from './types'
+import { parserDate } from './core'
 import styles from '../../styles/panel.module.scss'
-import { WEEK_DAY } from './constants'
-import { useTitle, useCurrentDate } from './hook'
+import { useTitle } from './hook'
 
-const DayBlock = memo(({ value, date, index, click }: PanelDayBlockPropsType) => {
-  const day = value.getDate()
-  const { currentYear, currentMonth, currentDay } = date || {}
-  // 当前日期块的年份、月份
-  const { year, month } = parserDate(value)
-  // 当前时间面板的年份、月份
-  const disable = +currentYear !== +year || +currentMonth !== +month
-  // 计算今天
-  const isToday = +currentMonth === +month && +currentDay === +day
-  // 是否展示剩下的日期（超过本月，并且换行）
-  const isHiddenNextDay = index && +currentMonth < +month && index > 34 // map index 从0开始
-  return <>
-    {
-      isHiddenNextDay ?
-        null :
-        <div
-          className={`${styles['no-select']} ${styles['day-block']} ${disable ? styles.disable : ''} ${isToday ? styles.active : '' }`}
-          onClick={() => click?.({year: currentYear, month: currentMonth, day})}
-        >
-          {day}
-        </div>
-    }
-  </>
-})
+import CalendarCore from './CalendarCore';
+import { DateContext } from './context'
+
+const initMonths = [
+  {
+    year: 2023,
+    month: 5
+  },
+  {
+    year: 2023,
+    month: 6
+  },
+  {
+    year: 2023,
+    month: 7
+  }
+]
 
 export const CalendarPanel: FC<PanelPropsType> = (props) => {
   const { value = new Date() } = props
@@ -37,9 +29,15 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
 
   const { year, month } = useTitle({ year: Number(parseYear), month: Number(parseMonth) })
 
-  const monthDay = getMonthDay({year: parseYear, month: parseMonth})
+  const [dateState, setDateState] = useState({
+    year: parseYear,
+    month: parseMonth,
+    day: day
+  })
 
-  const { handleChangeDate, dayBlockDateProps } = useCurrentDate(value)
+  const updateState = useCallback((args: any) => {
+    setDateState(args)
+  }, [])
 
   return (
     <div className={styles.panel}>
@@ -47,10 +45,14 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
         <span className={styles.month}>{month}</span>
         <span className={styles.year}>{year}</span>
       </div>
-      <div className={styles.main}>
-        {WEEK_DAY.map(v => <div key={v} className={`${styles['no-select']} ${styles.week}`}>{v}</div>)}
-        {monthDay.map((v, index) => <DayBlock key={v.toLocaleDateString()} value={v} date={dayBlockDateProps} index={index} click={handleChangeDate} />)}
-      </div>
+      <DateContext.Provider value={{
+        state: dateState,
+        update: updateState
+      }}>
+        {
+          initMonths.map(v => <CalendarCore month={v.month} year={v.year} />)
+        }
+      </DateContext.Provider>
     </div>
   )
 }

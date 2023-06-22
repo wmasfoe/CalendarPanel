@@ -2,6 +2,11 @@ export type PanelPropsType = {
   value?: Date
 }
 
+export type PanelCorePropsType = {
+  year: string|number;
+  month: string|number;
+}
+
 export type ParserDateReturnValue = {
   year: string;
   month: string;
@@ -13,7 +18,7 @@ export type PanelDayBlockPropsType = {
   date: {
     currentYear: string | number;
     currentMonth: string | number;
-    currentDay: string | number;
+    currentDay?: string | number;
   };
   index?: number;
   click?: (params: {year: string|number; month: string|number; day: string|number}) => void;
