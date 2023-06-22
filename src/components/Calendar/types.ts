@@ -16,4 +16,5 @@ export type PanelDayBlockPropsType = {
     currentDay: string | number;
   };
   index?: number;
+  click?: (params: {year: string|number; month: string|number; day: string|number}) => void;
 }

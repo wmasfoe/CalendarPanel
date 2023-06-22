@@ -1,11 +1,11 @@
-import { FC } from 'react'
+import { FC, memo } from 'react'
 import type { PanelPropsType, PanelDayBlockPropsType } from './types'
-import { getMonthDay, calendarTitle, parserDate } from './core'
+import { getMonthDay, parserDate } from './core'
 import styles from '../../styles/panel.module.scss'
 import { WEEK_DAY } from './constants'
-import { useTitle } from './hook'
+import { useTitle, useCurrentDate } from './hook'
 
-function DayBlock({ value, date, index }: PanelDayBlockPropsType) {
+const DayBlock = memo(({ value, date, index, click }: PanelDayBlockPropsType) => {
   const day = value.getDate()
   const { currentYear, currentMonth, currentDay } = date || {}
   // 当前日期块的年份、月份
@@ -20,27 +20,26 @@ function DayBlock({ value, date, index }: PanelDayBlockPropsType) {
     {
       isHiddenNextDay ?
         null :
-        <div className={`${styles['no-select']} ${styles['day-block']} ${disable ? styles.disable : ''} ${isToday ? styles.active : '' }`}>
+        <div
+          className={`${styles['no-select']} ${styles['day-block']} ${disable ? styles.disable : ''} ${isToday ? styles.active : '' }`}
+          onClick={() => click?.({year: currentYear, month: currentMonth, day})}
+        >
           {day}
         </div>
     }
   </>
-}
+})
 
 export const CalendarPanel: FC<PanelPropsType> = (props) => {
   const { value = new Date() } = props
 
-  const { year: numberYear, month: numberMonth, day } = parserDate(value)
+  const { year: parseYear, month: parseMonth, day } = parserDate(value)
 
-  const { year, month } = useTitle({ year: Number(numberYear), month: Number(numberMonth) })
+  const { year, month } = useTitle({ year: Number(parseYear), month: Number(parseMonth) })
 
-  const monthDay = getMonthDay({year: numberYear, month: numberMonth})
+  const monthDay = getMonthDay({year: parseYear, month: parseMonth})
 
-  const dayBlockDateProps = {
-    currentYear: numberYear,
-    currentMonth: numberMonth,
-    currentDay: day
-  }
+  const { handleChangeDate, dayBlockDateProps } = useCurrentDate(value)
 
   return (
     <div className={styles.panel}>
@@ -50,7 +49,7 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
       </div>
       <div className={styles.main}>
         {WEEK_DAY.map(v => <div key={v} className={`${styles['no-select']} ${styles.week}`}>{v}</div>)}
-        {monthDay.map((v, index) => <DayBlock key={v.toLocaleDateString()} value={v} date={dayBlockDateProps} index={index} />)}
+        {monthDay.map((v, index) => <DayBlock key={v.toLocaleDateString()} value={v} date={dayBlockDateProps} index={index} click={handleChangeDate} />)}
       </div>
     </div>
   )
