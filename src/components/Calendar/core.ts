@@ -63,3 +63,28 @@ export const getMonthDay = (date: {year: any; month: any}) => {
   }
   return days;
 }
+
+// 获取当前日期的前后各一个月(月份从1月开始)
+export const getMonths = (params?: {year: number; month: number}) => {
+  const { year, month } = params || {}
+  const { year: parseYear, month: parseMonth } = _parserDate(new Date())
+  const resDate = {
+    year: year || parseYear,
+    month: month || parseMonth + 1, // parse 需要+1
+  }
+  const res = []
+  res.push({
+    year: resDate.month === 1 ? resDate.year - 1 : resDate.year,
+    month: resDate.month === 1 ? 12 : resDate.month - 1
+  })
+  res.push({
+    year: resDate.year,
+    month: resDate.month
+  })
+  res.push({
+    year: resDate.month === 12 ? resDate.year + 1 : resDate.year,
+    month: resDate.month === 12 ? 1 : resDate.month + 1
+  })
+
+  return res
+}

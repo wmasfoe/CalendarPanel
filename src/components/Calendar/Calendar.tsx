@@ -1,31 +1,18 @@
 import { FC, useCallback, useState } from 'react'
 import type { PanelPropsType } from './types'
-import { parserDate } from './core'
+import { parserDate, getMonths } from './core'
 import styles from '../../styles/panel.module.scss'
 import { useTitle } from './hook'
 
 import CalendarCore from './CalendarCore';
 import { DateContext } from './context'
 
-const initMonths = [
-  {
-    year: 2023,
-    month: 5
-  },
-  {
-    year: 2023,
-    month: 6
-  },
-  {
-    year: 2023,
-    month: 7
-  }
-]
-
 export const CalendarPanel: FC<PanelPropsType> = (props) => {
   const { value = new Date() } = props
 
   const { year: parseYear, month: parseMonth, day } = parserDate(value)
+
+  const initMonths = getMonths()
 
   const { year, month } = useTitle({ year: Number(parseYear), month: Number(parseMonth) })
 
