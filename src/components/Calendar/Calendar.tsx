@@ -1,11 +1,17 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useState, Suspense, lazy } from 'react'
+
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 import type { PanelPropsType } from './types'
 import { parserDate, getMonths } from './core'
 import styles from '../../styles/panel.module.scss'
 import { useTitle } from './hook'
 
-import CalendarCore from './CalendarCore';
 import { DateContext } from './context'
+
+const CalendarCore = lazy(() => import('./CalendarCore'))
+const Slider = lazy(() => import('react-slick'))
 
 export const CalendarPanel: FC<PanelPropsType> = (props) => {
   const { value = new Date() } = props
@@ -14,13 +20,13 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
 
   const initMonths = getMonths()
 
-  const { year, month } = useTitle({ year: Number(parseYear), month: Number(parseMonth) })
-
   const [dateState, setDateState] = useState({
     year: parseYear,
     month: parseMonth,
     day: day
   })
+
+  const { year, month } = useTitle({ year: Number(dateState.year), month: Number(dateState.month) })
 
   const updateState = useCallback((args: any) => {
     setDateState(args)
@@ -36,9 +42,13 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
         state: dateState,
         update: updateState
       }}>
-        {
-          initMonths.map(v => <CalendarCore month={v.month} year={v.year} />)
-        }
+        <Suspense fallback={<div className={styles.loading}>loading...</div>}>
+          <Slider dots={false} arrows={false} touchThreshold={7} infinite={false}>
+            {
+              initMonths.map(v => <CalendarCore key={v.month} month={v.month} year={v.year} />)
+            }
+          </Slider>
+        </Suspense>
       </DateContext.Provider>
     </div>
   )

@@ -24,7 +24,8 @@ const DayBlock = memo(({ value, date, index, click }: PanelDayBlockPropsType) =>
   const isHiddenNextDay = index && +currentMonth < +month && index > 34 // map index 从0开始
 
   const handleClick = () => {
-    update({year: currentYear, month: currentMonth, day})
+    // TODO 如果当前点击的为 disable 态，应该切换当前月
+    update({year, month, day})
   }
 
   return <>
@@ -33,7 +34,7 @@ const DayBlock = memo(({ value, date, index, click }: PanelDayBlockPropsType) =>
         null :
         <div
           className={`${styles['no-select']} ${styles['day-block']} ${disable ? styles.disable : ''} ${isToday ? styles.active : '' }`}
-          onClick={handleClick}
+          onMouseUp={handleClick}
         >
           {day}
         </div>

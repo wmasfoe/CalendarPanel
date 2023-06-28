@@ -24,7 +24,7 @@ export const useTitle = ({
   useEffect(() => {
     setYear(parseYear)
     setMonth(parseMonth + 1)
-  }, [])
+  }, [parseYear, parseMonth])
 
   return {
     // @ts-ignore
