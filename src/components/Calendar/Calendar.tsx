@@ -27,13 +27,14 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
   })
 
   const [monthIndex, setMonthIndex] = useState(1)
-  const { year, month } = useTitle({ year: Number(initMonths[monthIndex as number].year), month: Number(initMonths[monthIndex as number].month) })
+  const { year, month } = useTitle({ year: Number(initMonths[monthIndex].year), month: Number(initMonths[monthIndex].month) })
 
-  const updateState = useCallback((args: any) => {
+  const updateState = useCallback((args?: any) => {
     setDateState(args)
   }, [])
 
-  const SliderInstance = useRef(null) 
+  // TODO InstanceType<typeof Slider> 报错 Slider 不是抽象类，有待排查
+  const SliderInstance = useRef<any>()
 
   const handlePrev = () => {
     SliderInstance.current?.slickPrev?.()
@@ -42,7 +43,7 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
     SliderInstance.current?.slickNext?.()
   }
 
-  const onMonthChange = (index: number) => {
+  const onMonthChange = (_: number, index: number) => {
     if(monthIndex === index) return
     setMonthIndex(index)
   }
@@ -59,7 +60,7 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
         update: updateState
       }}>
         <Suspense fallback={<div className={styles.loading}>loading...</div>}>
-          <Slider ref={SliderInstance} dots={false} arrows={false} touchThreshold={7} infinite={false} initialSlide={1} lazyLoad="progressive" afterChange={onMonthChange}>
+          <Slider ref={SliderInstance} adaptiveHeight={true} dots={false} arrows={false} touchThreshold={7} infinite={false} initialSlide={1} lazyLoad="progressive" beforeChange={onMonthChange}>
             {
               // TODO 到达临界值直接改变 initMonths 就可以，状态会保存
               initMonths.map(v =>
