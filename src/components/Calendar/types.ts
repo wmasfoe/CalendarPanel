@@ -5,6 +5,8 @@ export type PanelPropsType = {
 export type PanelCorePropsType = {
   year: string|number;
   month: string|number;
+  nextMonth?: (...args: any[]) => any;
+  prevMonth?: (...args: any[]) => any;
 }
 
 export type ParserDateReturnValue = {
@@ -22,4 +24,5 @@ export type PanelDayBlockPropsType = {
   };
   index?: number;
   click?: (params: {year: string|number; month: string|number; day: string|number}) => void;
+  updateMonth?: (args: {type: 'next' | 'prev', month?: number}) => void;
 }

@@ -1,4 +1,4 @@
-import { FC, useCallback, useState, Suspense, lazy } from 'react'
+import { FC, useCallback, useState, Suspense, lazy, useRef } from 'react'
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -26,14 +26,30 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
     day: day
   })
 
-  const { year, month } = useTitle({ year: Number(dateState.year), month: Number(dateState.month) })
+  const [monthIndex, setMonthIndex] = useState(1)
+  const { year, month } = useTitle({ year: Number(initMonths[monthIndex as number].year), month: Number(initMonths[monthIndex as number].month) })
 
   const updateState = useCallback((args: any) => {
     setDateState(args)
   }, [])
 
+  const SliderInstance = useRef(null) 
+
+  const handlePrev = () => {
+    SliderInstance.current?.slickPrev?.()
+  }
+  const handleNext = () => {
+    SliderInstance.current?.slickNext?.()
+  }
+
+  const onMonthChange = (index: number) => {
+    if(monthIndex === index) return
+    setMonthIndex(index)
+  }
+
   return (
     <div className={styles.panel}>
+      <div>{dateState.year} - {dateState.month} - {dateState.day}</div>
       <div className={styles.title}>
         <span className={styles.month}>{month}</span>
         <span className={styles.year}>{year}</span>
@@ -43,9 +59,17 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
         update: updateState
       }}>
         <Suspense fallback={<div className={styles.loading}>loading...</div>}>
-          <Slider dots={false} arrows={false} touchThreshold={7} infinite={false}>
+          <Slider ref={SliderInstance} dots={false} arrows={false} touchThreshold={7} infinite={false} initialSlide={1} lazyLoad="progressive" afterChange={onMonthChange}>
             {
-              initMonths.map(v => <CalendarCore key={v.month} month={v.month} year={v.year} />)
+              initMonths.map(v =>
+                <CalendarCore
+                  key={v.month}
+                  month={v.month}
+                  year={v.year}
+                  nextMonth={handleNext}
+                  prevMonth={handlePrev}
+                />
+              )
             }
           </Slider>
         </Suspense>
