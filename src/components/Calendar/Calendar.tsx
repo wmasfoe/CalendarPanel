@@ -61,6 +61,7 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
         <Suspense fallback={<div className={styles.loading}>loading...</div>}>
           <Slider ref={SliderInstance} dots={false} arrows={false} touchThreshold={7} infinite={false} initialSlide={1} lazyLoad="progressive" afterChange={onMonthChange}>
             {
+              // TODO 到达临界值直接改变 initMonths 就可以，状态会保存
               initMonths.map(v =>
                 <CalendarCore
                   key={v.month}
