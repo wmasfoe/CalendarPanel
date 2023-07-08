@@ -19,12 +19,9 @@ const DayBlock = memo(({ value, date, index, click, updateMonth }: PanelDayBlock
 
   // 当前时间面板的年份、月份
   const disable = +currentYear !== +year || +currentMonth !== +month
-  const isPrev = +currentMonth > +month || +currentYear > +year
   const isNext = +currentMonth < +month || +currentYear < +year
   // 计算今天
   const isToday = +year === +state.year && +month === +state.month && +day === +state.day
-  // 是否展示剩下的日期（超过本月，并且换行）
-  const isHiddenNextDay = index && +currentMonth < +month && index > 34 // map index 从0开始
 
   // 鼠标/手指移动，不响应mouseup事件
   const isMouseMoved = useRef(false)
@@ -52,18 +49,14 @@ const DayBlock = memo(({ value, date, index, click, updateMonth }: PanelDayBlock
   }
 
   return <>
-    {
-      isHiddenNextDay ?
-        null :
-        <div
-          className={`${styles['no-select']} ${styles['day-block']} ${disable ? styles.disable : ''} ${isToday ? styles.active : '' }`}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          onMouseDown={handleMouseDown}
-        >
-          {day}
-        </div>
-    }
+    <div
+      className={`${styles['no-select']} ${styles['day-block']} ${disable ? styles.disable : ''} ${isToday ? styles.active : '' }`}
+      onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
+      onMouseDown={handleMouseDown}
+    >
+      {day}
+    </div>
   </>
 })
 
@@ -78,7 +71,7 @@ export const CalendarPanel: FC<PanelCorePropsType> = (props) => {
 
   const updateMonth = (params: {
     type: 'next' | 'prev',
-    month: number
+    month?: number
   }) => {
     if(params.type === 'next' && typeof nextMonth !== 'undefined') {
       nextMonth()

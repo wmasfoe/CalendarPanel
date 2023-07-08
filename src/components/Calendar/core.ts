@@ -1,5 +1,6 @@
 import type { ParserDateReturnValue } from './types'
 import { numMonth2ZhHansMap } from './enums'
+import { ONE_DAY } from './constants';
 
 export function _parserDate(date: Date) {
   const year = date.getFullYear();
@@ -50,16 +51,25 @@ export const calendarTitle = (date: Date) => {
   }
 }
 
-// 获取当前月的日期
+// 获取当前月的日期，铺满且不冗余
 export const getMonthDay = (date: {year: any; month: any}) => {
   const firstDayOfMonth = new Date(date.year, Number(date.month) - 1, 1);
   // 获取当月第一天对应的是星期几
   const week = firstDayOfMonth.getDay();
   // 获取42天中的第一天对应的Date对象，即每月1号对应的时间减去week天
-  const startDay = firstDayOfMonth as unknown as number - week * 60 * 60 * 1000 * 24; 
+  const startDay = firstDayOfMonth as unknown as number - week * ONE_DAY; 
   const days = [];
+  const lastDayOfCurrentMonth = new Date(date.year, Number(date.month), 0)
   for (let i= 0; i< 42; i++) { // 循环出42天
-    days.push(new Date(startDay + i * 60 * 60 * 1000 * 24));
+    const beforePushDay = new Date(startDay + i * ONE_DAY)
+    // 判断第 35 天是否大于当前月，如果大于，则进行渲染，否则后面的日期块都不进行渲染
+    const isCheck = i === 35
+    // @ts-expect-error
+    if(isCheck && lastDayOfCurrentMonth - beforePushDay <= 0) {
+      break
+    } else {
+      days.push(beforePushDay);
+    }
   }
   return days;
 }
