@@ -98,3 +98,19 @@ export const getMonths = (params?: {year: number; month: number}) => {
 
   return res
 }
+
+export function getBeforeMonthOfCurrent(year: number, month: number) {
+  const prevMonth = new Date(year, month - 2, 1);
+  return {
+    year: prevMonth.getFullYear(),
+    month: prevMonth.getMonth() + 1
+  }
+}
+
+export function getAfterMonthOfCurrent(year: number, month: number) {
+  const nextMonth = new Date(year, month, 1);
+  return {
+    year: nextMonth.getFullYear(),
+    month: nextMonth.getMonth() + 1
+  }
+}

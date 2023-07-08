@@ -1,10 +1,11 @@
 import { FC, useCallback, useState, Suspense, lazy, useRef } from 'react'
+import { useImmer } from 'use-immer'
 
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 
 import type { PanelPropsType } from './types'
-import { parserDate, getMonths } from './core'
+import { parserDate, getMonths, getBeforeMonthOfCurrent, getAfterMonthOfCurrent } from './core'
 import styles from '../../styles/panel.module.scss'
 import { useTitle } from './hook'
 
@@ -20,6 +21,8 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
 
   const initMonths = getMonths()
 
+  const [months, setMonths] = useImmer(initMonths)
+
   const [dateState, setDateState] = useState({
     year: parseYear,
     month: parseMonth,
@@ -27,7 +30,7 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
   })
 
   const [monthIndex, setMonthIndex] = useState(1)
-  const { year, month } = useTitle({ year: Number(initMonths[monthIndex].year), month: Number(initMonths[monthIndex].month) })
+  const { year, month } = useTitle({ year: Number(months[monthIndex].year), month: Number(months[monthIndex].month) })
 
   const updateState = useCallback((args?: any) => {
     setDateState(args)
@@ -45,7 +48,20 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
 
   const onMonthChange = (_: number, index: number) => {
     if(monthIndex === index) return
+    // TODO index 的计算有问题，对数组进行push\unshift之后，index会变化
     setMonthIndex(index)
+    const isPrev = index < monthIndex
+    const year = months[index].year
+    const month = months[index].month
+    if(!year && !month) return
+    setMonths(draft => {
+      // TODO 不应该直接 unshift\push 应该查找当前月份索引，在对应位置进行插入
+      if(isPrev) {
+        draft.unshift(getBeforeMonthOfCurrent(year, month))
+      } else {
+        draft.push(getAfterMonthOfCurrent(year, month))
+      }
+    })
   }
 
   return (
@@ -62,8 +78,8 @@ export const CalendarPanel: FC<PanelPropsType> = (props) => {
         <Suspense fallback={<div className={styles.loading}>loading...</div>}>
           <Slider ref={SliderInstance} adaptiveHeight={true} dots={false} arrows={false} touchThreshold={7} infinite={false} initialSlide={1} lazyLoad="progressive" beforeChange={onMonthChange}>
             {
-              // TODO 到达临界值直接改变 initMonths 就可以，状态会保存
-              initMonths.map(v =>
+              // TODO 到达临界值直接改变 setMonths 就可以，状态会保存
+              months.map(v =>
                 <CalendarCore
                   key={v.month}
                   month={v.month}
